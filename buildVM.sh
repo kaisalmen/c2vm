@@ -3,7 +3,7 @@
 LOOPDEV=$(losetup -f);
 echo "Using: ${LOOPDEV}"
 dd if=/dev/zero of=/os/linux.img bs=$(expr 2048 \* 1024 \* 1024) count=1
-sfdisk ./os/linux.img < /os/builder/partition.txt
+sfdisk /os/linux.img < /os/builder/partition.txt
 losetup -o $(expr 512 \* 2048) ${LOOPDEV} ./os/linux.img
 mkfs.ext3 ${LOOPDEV}
 mkdir /os/mnt

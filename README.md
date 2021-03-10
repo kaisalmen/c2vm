@@ -28,8 +28,8 @@ wsl --import myubuntu D:\Virtuals\WSL2\myubutu .\myubuntu.tar --version 2
 
 Use a builder image
 ```
-cd builder; docker build -t d2v .
-docker run -it -v `pwd`:/os:rw --cap-add SYS_ADMIN --device $(losetup -f) d2v bash buildVM.sh myubuntu.tar
+cd builder; docker build -t d2vm .
+docker run -it -v `pwd`:/os:rw --cap-add SYS_ADMIN --device $(losetup -f) d2vm bash buildVM.sh myubuntu.tar
 ```
 
 ```

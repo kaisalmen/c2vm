@@ -8,7 +8,7 @@ https://github.com/iximiuz/docker-to-linux.git
 
 Build image
 ```
-docker build -t myubuntu .
+cd ubuntu; docker build -t myubuntu .; cd ..
 ```
 
 Use dive for container inspection:

@@ -26,10 +26,15 @@ Transform to WSL2 (optional):
 wsl --import myubuntu D:\Virtuals\WSL2\myubutu .\myubuntu.tar --version 2
 ```
 
+Create the builder image
+```
+cd builder; docker build -t d2vm .; cd ..
+```
+
 Use a builder image
 ```
-cd builder; docker build -t d2vm .
-docker run -it -v `pwd`:/os:rw --cap-add SYS_ADMIN --device $(losetup -f) d2vm bash buildVM.sh myubuntu.tar
+LOOPDEV=$(losetup -f)
+docker run -it -v `pwd`:/workspace:rw --privileged --cap-add SYS_ADMIN --device ${LOOPDEV} d2vm bash buildVM.sh myubuntu.tar ${LOOPDEV}
 ```
 
 ```

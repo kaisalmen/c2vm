@@ -1,22 +1,30 @@
 #!/bin/sh
+set -xe
 
-LOOPDEV=$(losetup -f);
-echo "Using: ${LOOPDEV}"
-dd if=/dev/zero of=/os/linux.img bs=$(expr 2048 \* 1024 \* 1024) count=1
-sfdisk /os/linux.img < /os/builder/partition.txt
-losetup -o $(expr 512 \* 2048) ${LOOPDEV} ./os/linux.img
+PARTITION_SIZE=$(expr 2048 \* 1024 \* 1024)
+LOOP_OFFSET=$(expr 512 \* 2048)
+LINUX_TAR=${1}
+LOOPDEV=${2}
+
+dd if=/dev/zero of=./linux.img bs=${PARTITION_SIZE} count=1
+sfdisk ./linux.img < ./builder/partition.txt
+losetup -o ${LOOP_OFFSET} ${LOOPDEV} ./linux.img
 mkfs.ext3 ${LOOPDEV}
-mkdir /os/mnt
-mount -t auto ${LOOPDEV} /os/mnt/
-tar -xf /os/${1} -C /os/mnt/
 
-extlinux --install /os/mnt/boot/
-cp /os/builder/syslinux.cfg /os/mnt/boot/syslinux.cfg
+if [[ ! -d ./mnt ]]; then
+    mkdir ./mnt
+fi
+mount -t auto ${LOOPDEV} ./mnt/
+#sudo mount -o loop,rw,sync,offset=${LOOP_OFFSET} -t auto ./linux.img ./mnt
+
+tar -xf ${LINUX_TAR} -C ./mnt
+extlinux --install ./mnt/boot/
+cp ./builder/syslinux.cfg ./mnt/boot/syslinux.cfg
 
 echo "Boot dir (/boot):"
-ls -lha /os/mnt/boot
+ls -lha ./mnt/boot
 
-umount /os/mnt
 losetup -D
+umount ./mnt
 
-dd if=/usr/lib/syslinux/mbr/mbr.bin of=/os/linux.img bs=440 count=1 conv=notrunc
+dd if=/usr/lib/syslinux/mbr/mbr.bin of=./linux.img bs=440 count=1 conv=notrunc

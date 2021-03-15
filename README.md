@@ -1,37 +1,37 @@
 # d2vm
-Docker to Virtual Machine
+Create a Virtual Machines from Docker Images derived from Ubuntu LTS 18.04 & 20.04 (for now).
 
-Starting point was: https://github.com/iximiuz/docker-to-linux.git
+This work was inspired by: https://github.com/iximiuz/docker-to-linux.git
 
-
-Build image
+# Preparation
+Build the example image (development machine with docker, nodejs and openjdk)
 ```
-cd ubuntu; docker build -t myubuntu .; cd ..
+$(cd ubuntu && docker build -t myubuntu .)
 ```
 
+Create the builder image
+```
+$(cd builder; docker build -t d2vm .)
+```
+
+# Build VM image
+
+This can be build on a linux system or with a priviledged docker container (d2vm build above)
+Arguments
+ - 1: base image (e.g. myubuntu)
+ - 2: disk size MB (e.g. 2048)
+```
+export LOOPDEV=$(losetup -f); docker run -it --env LOOPDEV=${LOOPDEV} -v /var/run/docker.sock:/var/run/docker.sock -v `pwd`:/workspace:rw --privileged --cap-add SYS_ADMIN --device ${LOOPDEV} d2vm bash buildVM.sh myubuntu 2048
+```
+
+## Utilities
 Use dive for container inspection:
 ```
 docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock wagoodman/dive:latest
 ```
 
-Create the builder image
-```
-cd builder; docker build -t d2vm .; cd ..
-```
-
-## Build VM image (img and vhdx)
-
-Arguments
- - 1: base image (e.g. myubuntu)
- - 2: loop dev (e.g. ${LOOPDEV})
- - 3: disk size MB (e.g. 2048)
-```
-LOOPDEV=$(losetup -f)
-docker run -it -v `pwd`:/workspace:rw --privileged --cap-add SYS_ADMIN --device ${LOOPDEV} d2vm bash buildVM.sh myubuntu ${LOOPDEV} 2048
-```
-
 ## Transform to WSL2 (optional):
 ```
 docker export -o ./staging/myubuntu.tar $(docker run -d myubuntu /bin/true)
-wsl --import myubuntu D:\Virtuals\WSL2\myubutu .\myubuntu.tar --version 2
+wsl --import myubuntu .\myubuntu .\myubuntu.tar --version 2
 ```

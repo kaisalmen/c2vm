@@ -46,18 +46,18 @@ if [[ ! -d ./staging/mnt ]]; then
 fi
 mount -t auto ${LOOPDEV} ./staging/mnt/
 
-echo -e "\nBuilding images"
+echo -e "\nBuilding bootstrap image:"
 cd bootstrap; docker build -t bootstrap . --build-arg BASE_IMAGE=${DOCKER_BASE_IMAGE}; cd ..
 
-echo -e "\nExporting Images..."
+echo -e "\nExporting bootstrap image:"
 docker export -o ./staging/bootstrap.tar $(docker run -d bootstrap /bin/true)
 
-echo -e "\nCopying files..."
+echo -e "\nCopying files to mounted loop disk root:"
 tar -xf ./staging/bootstrap.tar -C ./staging/mnt
 cp ./bootstrap/10-globally-managed-devices.conf ./staging/mnt/usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
 $(cd ./staging/mnt/boot; ln -fs vmlinuz-* vmlinuz; ln -fs initrd.img-* initrd.img)
 
-echo -e "\nConfiguring extlinux..."
+echo -e "\nConfiguring extlinux:"
 extlinux --install ./staging/mnt/boot/
 cp ./builder/syslinux.cfg ./staging/mnt/boot/syslinux.cfg
 
@@ -66,5 +66,5 @@ losetup -D
 
 dd if=/usr/lib/syslinux/mbr/mbr.bin of=./staging/linux.img bs=440 count=1 conv=notrunc
 
-echo "Building vhdx..."
+echo "Building vhdx:"
 qemu-img convert ./staging/linux.img -O vhdx -o subformat=dynamic ./staging/linux.vhdx

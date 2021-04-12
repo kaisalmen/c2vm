@@ -47,10 +47,10 @@ fi
 mount -t auto ${LOOPDEV} ./staging/mnt/
 
 echo -e "\nBuilding bootstrap image:"
-cd bootstrap; docker build -t bootstrap . --build-arg BASE_IMAGE=${DOCKER_BASE_IMAGE}; cd ..
+cd bootstrap; docker build -t c2vm/bootstrap . --build-arg BASE_IMAGE=${DOCKER_BASE_IMAGE}; cd ..
 
 echo -e "\nExporting bootstrap image:"
-docker export -o ./staging/bootstrap.tar $(docker run -d bootstrap /bin/true)
+docker export -o ./staging/bootstrap.tar $(docker run -d c2vm/bootstrap /bin/true)
 
 echo -e "\nCopying files to mounted loop disk root:"
 tar -xf ./staging/bootstrap.tar -C ./staging/mnt

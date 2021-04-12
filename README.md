@@ -16,7 +16,7 @@ docker installed on a Linux platform (WSL2 works) if you use the builder contain
 ## Preparation
 Create the builder image (`c2vm/builder`):
 ```
-$(cd builder && docker build -t c2vm/builder .)
+(cd builder && docker build -t c2vm/builder .)
 ```
 
 Optional: Build the example images:
@@ -24,9 +24,9 @@ Optional: Build the example images:
 - `c2vm/devbox`: Extends example and installs many development tools from (https://github.com/kaisalmen/wsltooling)
 - `c2vm/devboxui`: Extends devbox and installs xfce4 and firefox
 ```
-$(cd examples/basic; docker build -t c2vm/basic .)
-$(cd examples/devbox; docker build -t c2vm/devbox .)
-$(cd examples/devboxui; docker build -t c2vm/devboxui .)
+(cd examples/basic; docker build -t c2vm/basic .)
+(cd examples/devbox; docker build -t c2vm/devbox .)
+(cd examples/devboxui; docker build -t c2vm/devboxui .)
 ```
 
 ## Build VM image
@@ -36,9 +36,43 @@ Execute the script as specified below and change the two arguments as required:
  - 1: image to be converted and extended with bootstrap (e.g. `c2vm/basic`)
  - 2: disk size MB (e.g. 2048, but for the larger images, you must create bigger initial partitions)
 ```
-export LOOPDEV=$(losetup -f); docker run -it --env LOOPDEV=${LOOPDEV} -v /var/run/docker.sock:/var/run/docker.sock -v `pwd`:/workspace:rw --privileged --device ${LOOPDEV} c2vm/builder bash buildVM.sh c2vm/basic 2048
+export LOOPDEV=$(losetup -f); \
+docker run -it \
+--env LOOPDEV=${LOOPDEV} \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v `pwd`:/workspace:rw \
+--privileged \
+--device ${LOOPDEV} \
+c2vm/builder \
+bash buildVM.sh c2vm/basic 2048
 ```
 Create a new VM with qemu/kvm or with Hyper-V (1st gen VM) and use the virtuals disks `linux.img` or `linux.vhdx`.
+
+## Create a VM with KVM
+
+Use the following command to quickly create a new VM from the disk image residing in `staging` or use `virt-manager` as UI to do it manually:
+```
+virt-install --import \
+--disk ./staging/linux.img,cache=none \
+--os-variant=ubuntu20.04 \
+--name=c2vm-kvm \
+--vcpus=2 \
+--memory=2048 \
+--graphics spice \
+--noautoconsole
+```
+Interacting with the VM and performing further configuration work is easieast via `virt-manager`.
+
+## Create a VM with Hyper-V
+
+You need to have Windows 10, Hyper-V platform and adminstrative tools installed to be able to execute the following steps.
+Opena a Powershell with administrative rigths before you execute these commands.
+
+```
+New-VM -Name c2vm-hyperv -path .\staging\hyperv -MemoryStartupBytes 2GB -VHDPath .\staging\linux.vhdx
+Start-VM -Name c2vm-hyperv
+```
+
 
 ## Extras
 

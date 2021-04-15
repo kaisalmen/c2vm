@@ -54,7 +54,6 @@ Use the following command to quickly create a new VM from the disk image residin
 ```
 virt-install --import \
 --disk ./staging/linux.img,cache=none \
---os-variant=ubuntu20.04 \
 --name=c2vm-kvm \
 --vcpus=2 \
 --memory=2048 \

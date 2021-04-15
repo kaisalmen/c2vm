@@ -1,6 +1,6 @@
 FROM c2vm/basic
 
-RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata curl make unzip
+RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata curl make unzip sudo
 
 # create user
 ARG username=vmuser

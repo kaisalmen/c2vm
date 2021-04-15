@@ -1,4 +1,5 @@
-FROM c2vm/basic
+ARG BASE_IMAGE=docker.pkg.github.com/kaisalmen/c2vm/examples-basic
+FROM ${BASE_IMAGE}
 
 RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata curl make unzip sudo
 

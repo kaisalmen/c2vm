@@ -12,6 +12,6 @@ add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(
 apt update
 apt install -y --no-install-recommends docker-ce
 
-VERSION_DOCKER_COMPOSE="1.28.4"
+VERSION_DOCKER_COMPOSE="1.29.1"
 curl -fSL "https://github.com/docker/compose/releases/download/${VERSION_DOCKER_COMPOSE}/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose

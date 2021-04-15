@@ -12,5 +12,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y network-manager net-tools isc-
 # tools
 RUN apt install -y nano
 
+# Ensure ethernet is considered managed, otherwise VM is unable to up ethernet interface
+COPY ./10-globally-managed-devices.conf /usr/lib/NetworkManager/conf.d/10-globally-managed-devices.conf
+
+RUN cd /boot \
+    && ln -fs vmlinuz-* vmlinuz \
+    && ln -fs initrd.img-* initrd.img
+
 # login
 RUN echo "root:root" | chpasswd

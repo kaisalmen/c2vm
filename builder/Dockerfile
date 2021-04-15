@@ -1,13 +1,12 @@
-FROM ubuntu:20.04
+ARG BASE_IMAGE=ubuntu:20.04
+FROM ${BASE_IMAGE}
 
 RUN apt update; apt -y upgrade
-RUN apt install -y extlinux
-RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata net-tools
+# tzdate requires user interaction, therefore noninteractive is required
+RUN INTERACTION=noninteractive apt install -y extlinux tzdata net-tools qemu-utils
 
 COPY ./installDocker.sh /home/installDocker.sh
 RUN bash -x /home/installDocker.sh
 RUN mkdir /workspace
-
-RUN apt install -y qemu-utils
 
 WORKDIR /workspace

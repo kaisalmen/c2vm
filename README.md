@@ -1,12 +1,12 @@
 # Container to Virtual Machine (c2vm)
 
 Create virtual machines from containers derived from Ubuntu LTS (18.04 or 20.04).
-Other OS may be supported later. This is a proof-of-concept: Create bootable VMs from existing container images. Docker is used for image building and execution. The process could be adapted to buildah and podman
+Other OS may be supported later. This is a proof-of-concept: Create bootable VMs from existing container images. Docker is used for image building and execution. The process could be adapted to `buildah` and `podman`.
 
 The build script `buildVM.sh` performs all operations within a builder container.
 It creates a bootable partition in a loop back device.
 Then it extends the provided image with a bootstrap image that install a kernel, systemd and some utils.
-The previously created partition is mounted and then the bootstrap image is exported there. extlinux is installed and an MBR is written. Additionally to the img a vhdx is created.
+The previously created partition is mounted and then the bootstrap image is exported there. `extlinux` is installed and an MBR is written. Additionally to the img a vhdx is created.
 
 This work was inspired by: https://github.com/iximiuz/docker-to-linux.git 
 
@@ -46,7 +46,7 @@ docker run -it \
 c2vm/builder \
 bash buildVM.sh c2vm/basic 2048
 ```
-Create a new VM with qemu/kvm or with Hyper-V (1st gen VM) and use the virtuals disks `linux.img` or `linux.vhdx`.
+Create a new VM with qemu/kvm, with Hyper-V or VirtualBox by using the virtuals disks `linux.img`, `linux.vhdx` or `linux.vdi` (conversion scripts are readily available).
 
 ## Create a VM with KVM
 
@@ -61,12 +61,12 @@ virt-install --import \
 --graphics spice \
 --noautoconsole
 ```
-Interacting with the VM and performing further configuration work is easieast via `virt-manager`.
+Interacting with the VM and performing further configuration work is easiest via `virt-manager`.
 
 ## Create a VM with Hyper-V
 
-You need to have Windows 10, Hyper-V platform and adminstrative tools installed to be able to execute the following steps.
-Opena a Powershell with administrative rigths before you execute these commands.
+You need to have Windows 10, Hyper-V platform and administrative tools installed to be able to execute the following steps.
+Open a Powershell with administrative rights before you execute the following two commands.
 
 ```
 New-VM -Name c2vm-hyperv -path .\staging\hyperv -MemoryStartupBytes 2GB -VHDPath .\staging\linux.vhdx
